@@ -5,7 +5,7 @@ function MovieItem({ movie, onSelectMovieId }) {
         <li onClick={() => onSelectMovieId(movie.imdbID)}>
             <img src={movie.Poster} alt={`${movie.Title} poster`} />
             <h3>{movie.Title}</h3>
-            <h4><span><a href={`https://www.imdb.com/title/${item._id}`}></a></span></h4>
+            <h4><span><a href={`https://www.imdb.com/title/${item._id}`}>IMDb Review</a></span></h4>
             <div>
                 <p>
                     <span>📅</span>
