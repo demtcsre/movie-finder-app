@@ -1,59 +1,82 @@
-const express = require('express');
-const axios = require('axios');
-const dotenv = require('dotenv');
-const cors = require('cors');
+import { useEffect, useState } from "react";
+import "./App.css";
 
-dotenv.config();
+import { NavBar } from "./components/NavBar";
+import { Main } from "./components/Main";
+import { BoxMovies } from "./components/BoxMovies";
+import { MovieList } from "./components/MovieList";
+import { Loader } from "./components/Loader";
+import { ErrorMessage } from "./components/ErrorMessage";
 
-const app = express();
-app.use(cors());
+export default function App() {
+    const [movies, setMovies] = useState([]);
+    const [query, setQuery] = useState("");
+    const [selectedMovieId, setSelectedMovieId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
-app.get('/api/movie', async (req, res) => {
-    const movieTitle = req.query.title;
-    const apiKey = process.env.OMDB_API_KEY;
-    
-    const safeMovieTitle = encodeURIComponent(movieTitle);
-    const baseUrl = `https://www.omdbapi.com/?s=${safeMovieTitle}&apikey=${apiKey}`;
-
-    try {
-        const firstPageResponse = await axios.get(baseUrl);
-        const initialData = firstPageResponse.data;
-
-        if (initialData.Response === 'False') {
-            return res.json(initialData);
-        }
-
-        let allMovies = initialData.Search;
-        const totalResults = parseInt(initialData.totalResults, 10);
-        
-        const totalPages = Math.ceil(totalResults / 10);
-        const pagesToFetch = Math.min(totalPages, 3);
-
-        if (pagesToFetch > 1) {
-            const pagePromises = [];
-            for (let page = 2; page <= pagesToFetch; page++) {
-                pagePromises.push(axios.get(`${baseUrl}&page=${page}`));
-            }
-
-            const additionalResponses = await Promise.all(pagePromises);
-
-            additionalResponses.forEach(response => {
-                if (response.data.Search) {
-                    allMovies = allMovies.concat(response.data.Search);
-                }
-            });
-        }
-        
-        res.json({
-            Search: allMovies,
-            totalResults: initialData.totalResults,
-            Response: 'True',
-        });
-
-    } catch (error) {
-        console.error('Error fetching data from OMDB:', error);
-        res.status(500).send('Error fetching data');
+    function handleSelectMovieId(id) {
+        setSelectedMovieId((selectedId) => (selectedId === id ? null : id));
     }
-});
 
-module.exports = app;
+    useEffect(() => {
+        const controller = new AbortController();
+
+        async function fetchMovies() {
+            try {
+                setIsLoading(true);
+                setError("");
+
+                const res = await fetch(`/api/movie?title=${query}`, {
+                    signal: controller.signal,
+                });
+
+                if (!res.ok) {
+                    throw new Error("Something went wrong with fetching movies");
+                }
+                const data = await res.json();
+                if (data.Response === "False") {
+                    throw new Error("Movie not found");
+                }
+                setMovies(data.Search);
+                setError("");
+            } catch (err) {
+                if (err.name !== "AbortError") {
+                    setError(err.message);
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        if (query.length < 3) {
+            setMovies([]);
+            setError("");
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            fetchMovies();
+        }, 500);
+
+        return function () {
+            clearTimeout(timer);
+            controller.abort();
+        };
+    }, [query]);
+
+    return (
+        <>
+            <NavBar movies={movies} query={query} setQuery={setQuery} />
+            <Main>
+                <BoxMovies>
+                    {isLoading && <Loader />}
+                    {!isLoading && !error && (
+                        <MovieList movies={movies} onSelectMovieId={handleSelectMovieId} />
+                    )}
+                    {error && <ErrorMessage message={error} />}
+                </BoxMovies>
+            </Main>
+        </>
+    );
+}
