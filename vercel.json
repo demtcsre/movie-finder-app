@@ -11,7 +11,6 @@
       "use": "@vercel/node"
     }
   ],
-  
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -19,7 +18,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/client/index.html"
+      "destination": "/client/dist/index.html"
     }
   ]
 }
