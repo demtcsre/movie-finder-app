@@ -1,8 +1,29 @@
-# React + Vite
+# Aplikasi Pencarian Film (OMDb API)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sebuah website sederhana yang memungkinkan pengguna untuk mencari informasi film dan serial TV menggunakan OMDb API. Proyek ini dibangun dengan frontend **React (Vite)** dan backend **Express.js** untuk menangani permintaan ke API.
 
-Currently, two official plugins are available:
+## ✨ Fitur Utama
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* **Pencarian Film**: Cari film atau serial TV berdasarkan judul.
+* **Tampilan Hasil**: Menampilkan hasil pencarian dalam bentuk galeri yang informatif.
+* **Informasi Detail**: Menampilkan Judul, Tipe (Film/Serial), Tahun Tayang, dan Poster untuk setiap hasil.
+* **Antarmuka Responsif**: Tampilan yang dapat menyesuaikan diri dengan berbagai ukuran layar.
+
+---
+
+## 💻 Teknologi yang Digunakan
+
+* **Frontend**: React (Vite), JavaScript (ES6+), CSS
+* **Backend**: Express.js, Node.js
+* **API**: [OMDb API (The Open Movie Database)](http://www.omdbapi.com/)
+* **Lainnya**: Axios untuk melakukan permintaan HTTP.
+
+---
+
+## 🚀 Cara Menjalankan Proyek Secara Lokal
+
+Untuk menjalankan proyek ini di mesin lokal Anda, ikuti langkah-langkah berikut:
+
+**Prasyarat:**
+* Node.js (v18 atau lebih baru)
+* npm / yarn / pnpm
